@@ -13,6 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.11</junit.version>
+        <websocket.version>1.0</websocket.version>
         <goblin-core.version>1.0-SNAPSHOT</goblin-core.version>
     </properties>
 
@@ -28,6 +29,12 @@
             <groupId>org.goblin</groupId>
             <artifactId>goblin-core</artifactId>
             <version>${goblin-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>${websocket.version}</version>
         </dependency>
 
     </dependencies>
