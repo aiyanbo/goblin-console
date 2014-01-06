@@ -5,12 +5,32 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
 </head>
 <body>
-<header>
+<div id="container">
+    <div id="speech">
+        <input type="text" id="command" ng-model="command" x-webkit-speech placeholder="Execute command">
+    </div>
+    <div id="command_shaw">
+        {{command}}
+    </div>
+    <div id="console">
 
-</header>
-
-<footer>
-
-</footer>
+    </div>
+</div>
 </body>
+<script type="text/javascript">
+    var ws = new WebSocket("ws://localhost:8080/console");
+    ws.onmessage = function (event) {
+        scrollConsole(event.data);
+    };
+    ws.open();
+
+    function sendCommand() {
+        var command = document.querySelector("#command").value;
+        ws.send(command);
+    }
+
+    function scrollConsole(message) {
+        document.querySelector("#console").appendData(message);
+    }
+</script>
 </html>
