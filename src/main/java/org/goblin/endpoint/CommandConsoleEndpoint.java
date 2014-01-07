@@ -89,14 +89,14 @@ public class CommandConsoleEndpoint {
     }
 
     private void broadcast(List<RemoteEndpoint.Basic> clients, String message) {
-        for (RemoteEndpoint.Basic client : clients) {
-            synchronized (client) {
-                try {
+        try {
+            for (RemoteEndpoint.Basic client : clients) {
+                synchronized (client) {
                     client.sendText(message);
-                } catch (IOException e) {
-                    //ignore
                 }
             }
+        } catch (IOException e) {
+            //ignore
         }
     }
 }
