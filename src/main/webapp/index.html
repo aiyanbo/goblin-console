@@ -1,13 +1,23 @@
 <!DOCTYPE html>
-<html ng-app>
+<html>
 <head>
     <title>Goblin Console</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
+    <style type="text/css">
+        #command {
+            width: 400px;
+            height: 50px;
+            padding: 10px 15px;
+            font-size: 155%;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            outline: 0;
+        }
+    </style>
 </head>
 <body>
 <div id="container">
     <div id="speech">
-        <input type="text" id="command" ng-model="command" x-webkit-speech placeholder="Execute command">
+        <input type="text" id="command" placeholder="Execute command" x-webkit-speech speech>
     </div>
     <div id="command_shaw">
         {{command}}
@@ -18,19 +28,39 @@
 </div>
 </body>
 <script type="text/javascript">
-    var ws = new WebSocket("ws://localhost:8080/console");
-    ws.onmessage = function (event) {
-        scrollConsole(event.data);
-    };
-    ws.open();
+    //    var ws = new WebSocket("ws://localhost:8080/console");
+    //    ws.onmessage = function (event) {
+    //        scrollConsole(event.data);
+    //    };
+    var commandSelector = "#command";
+    addHandler(commandSelector, "webkit speech change", sendCommand);
+    addHandler(commandSelector, "key press", function (event) {
+        if (event.which === 13) {
+            sendCommand();
+        }
+    });
 
     function sendCommand() {
         var command = document.querySelector("#command").value;
-        ws.send(command);
+        console.log("send command: " + command);
+//        ws.send(command);
     }
 
     function scrollConsole(message) {
         document.querySelector("#console").appendData(message);
+    }
+
+    function addHandler(selector, eventType, func) {
+        var element = document.querySelector(selector);
+        if (element) {
+            var event = eventType.replace(" ", "").toLowerCase();
+            console.log("Bind event: " + eventType + " on " + selector);
+            if (element.addEventListener) {
+                element.addEventListener(event, func, false);
+            } else {
+                element.attachEvent("on" + event, func);
+            }
+        }
     }
 </script>
 </html>
