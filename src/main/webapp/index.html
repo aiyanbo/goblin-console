@@ -21,13 +21,17 @@
         #console {
             height: 500px;
             color: white;
+            padding: 0;
             font-size: 12px;
             margin-top: 30px;
             background: #222;
         }
 
         #console p {
-            line-height: 19px;
+            margin: 0;
+            border: 0;
+            padding: 1px 0 1px 5px;
+            line-height: 14px;
         }
 
         #console p:hover {
@@ -42,10 +46,7 @@
         <input type="text" id="command" placeholder="Execute command" x-webkit-speech speech>
     </div>
     <div id="console">
-        <p>
-            <a href="!#"></a>
-            <span>Execute command</span>
-        </p>
+
     </div>
 </div>
 </body>
