@@ -3,8 +3,13 @@
 <head>
     <title>Goblin Console</title>
     <style type="text/css">
+        #container {
+            width: 750px;
+            margin: 0 auto;
+        }
+
         #command {
-            width: 400px;
+            width: 720px;
             height: 50px;
             padding: 10px 15px;
             font-size: 155%;
@@ -12,6 +17,23 @@
             border: 1px solid #ccc;
             outline: 0;
         }
+
+        #console {
+            height: 500px;
+            color: white;
+            font-size: 12px;
+            margin-top: 30px;
+            background: #222;
+        }
+
+        #console p {
+            line-height: 19px;
+        }
+
+        #console p:hover {
+            background: #444;
+        }
+
     </style>
 </head>
 <body>
@@ -19,19 +41,19 @@
     <div id="speech">
         <input type="text" id="command" placeholder="Execute command" x-webkit-speech speech>
     </div>
-    <div id="command_shaw">
-        {{command}}
-    </div>
     <div id="console">
-
+        <p>
+            <a href="!#"></a>
+            <span>Execute command</span>
+        </p>
     </div>
 </div>
 </body>
 <script type="text/javascript">
-    //    var ws = new WebSocket("ws://localhost:8080/console");
-    //    ws.onmessage = function (event) {
-    //        scrollConsole(event.data);
-    //    };
+    var ws = new WebSocket("ws://localhost:8080/console");
+    ws.onmessage = function (event) {
+        scrollConsole(event.data);
+    };
     var commandSelector = "#command";
     addHandler(commandSelector, "webkit speech change", sendCommand);
     addHandler(commandSelector, "key press", function (event) {
@@ -43,10 +65,11 @@
     function sendCommand() {
         var command = document.querySelector("#command").value;
         console.log("send command: " + command);
-//        ws.send(command);
+        ws.send(command);
     }
 
     function scrollConsole(message) {
+        console.log(message);
         document.querySelector("#console").appendData(message);
     }
 
