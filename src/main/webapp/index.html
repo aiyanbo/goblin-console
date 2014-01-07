@@ -70,7 +70,15 @@
 
     function scrollConsole(message) {
         console.log(message);
-        document.querySelector("#console").appendData(message);
+        var consoleContainer = document.querySelector("#console");
+        var p = document.createElement("p");
+        var a = document.createElement("a");
+        a.href = "!#";
+        var span = document.createElement("span");
+        span.innerHTML = message;
+        p.appendChild(a);
+        p.appendChild(span);
+        consoleContainer.appendChild(p);
     }
 
     function addHandler(selector, eventType, func) {
