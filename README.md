@@ -7,18 +7,23 @@ Goblin console, see https://github.com/aiyanbo/goblin-core
 Build
 ------
 1. build jmotor-utility
+
 ```sh
 git clone https://github.com/aiyanbo/jmotor-utility.git
 cd jmotor-utility
 mvn clean install
 ```
+
 2. build goblin-core
+
 ```sh
 git clone https://github.com/aiyanbo/goblin-core.git
 cd goblin-core
 mvn clean install
 ```
+
 3. build goblin-console
+
 ```sh
 git clone https://github.com/aiyanbo/goblin-console.git
 cd goblin-console
