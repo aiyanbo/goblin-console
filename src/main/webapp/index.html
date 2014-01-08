@@ -68,6 +68,7 @@
     function sendCommand() {
         var command = document.querySelector("#command").value;
         console.log("send command: " + command);
+        scrollConsole(command);
         ws.send(command);
     }
 
@@ -82,6 +83,7 @@
         p.appendChild(a);
         p.appendChild(span);
         consoleContainer.appendChild(p);
+        consoleContainer.scrollTop = consoleContainer.scrollHeight;
     }
 
     function addHandler(selector, eventType, func) {
