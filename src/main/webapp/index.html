@@ -45,7 +45,8 @@
 <body>
 <div id="container">
     <div id="speech">
-        <input type="text" id="command" placeholder="Execute command" x-webkit-speech speech>
+        <input type="text" id="command" placeholder="Execute command" onwebkitspeechchange="sendCommand()" lang="en_US"
+               x-webkit-speech speech>
     </div>
     <div id="console">
 
@@ -58,7 +59,7 @@
         scrollConsole(event.data);
     };
     var commandSelector = "#command";
-    addHandler(commandSelector, "webkit speech change", sendCommand);
+    addHandler(commandSelector, "speech change", sendCommand);
     addHandler(commandSelector, "key press", function (event) {
         if (event.which === 13) {
             sendCommand();
