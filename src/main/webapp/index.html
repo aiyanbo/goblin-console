@@ -87,6 +87,11 @@
         consoleContainer.scrollTop = consoleContainer.scrollHeight;
     }
 
+    function speech(text) {
+        var speech = "http://tts-api.com/tts.mp3?q=" + encodeURIComponent(text);
+        new Audio(speech).play();
+    }
+
     function addHandler(selector, eventType, func) {
         var element = document.querySelector(selector);
         if (element) {
@@ -99,5 +104,6 @@
             }
         }
     }
+
 </script>
 </html>
