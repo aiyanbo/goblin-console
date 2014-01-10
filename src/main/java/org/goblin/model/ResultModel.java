@@ -7,11 +7,13 @@ package org.goblin.model;
  *
  * @author Andy Ai
  */
-public class Result {
+public class ResultModel {
     private String print;
     private String next;
     private String forward;
     private String speech;
+    private String search;
+    private String exception;
 
     public String getPrint() {
         return print;
@@ -43,5 +45,21 @@ public class Result {
 
     public void setSpeech(String speech) {
         this.speech = speech;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
     }
 }

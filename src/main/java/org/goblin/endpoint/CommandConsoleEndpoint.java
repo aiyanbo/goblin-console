@@ -1,10 +1,12 @@
 package org.goblin.endpoint;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.goblin.builder.GoblinCommanderBuilder;
 import org.goblin.commander.GoblinCommander;
 import org.goblin.dto.ProcessContext;
-import org.goblin.exception.CommandExecuteException;
-import org.goblin.exception.CommandNotFoundException;
+import org.goblin.dto.Result;
+import org.goblin.model.ResultModel;
 import org.jmotor.util.CloseableUtilities;
 
 import javax.websocket.CloseReason;
@@ -20,10 +22,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Component:
@@ -35,66 +33,85 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint("/console")
 public class CommandConsoleEndpoint {
     private static final GoblinCommander GOBLIN_COMMANDER = GoblinCommanderBuilder.newBuilder().build();
-    private static final Set<CommandConsoleEndpoint> CONNECTIONS = new CopyOnWriteArraySet<>();
-    private Session session;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private ProcessContext processContext;
 
+    static {
+        OBJECT_MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+    }
+
     @OnOpen
-    public void open(Session session, EndpointConfig config) {
-        this.session = session;
+    public void open(EndpointConfig config) {
         this.processContext = new ProcessContext();
-        CONNECTIONS.add(this);
     }
 
     @OnClose
-    public void close(CloseReason reason) {
-        CONNECTIONS.remove(this);
+    public void close(Session session, CloseReason reason) {
+        try {
+            session.close(reason);
+        } catch (IOException e) {
+            // ignore
+        }
     }
 
     @OnError
     public void error(Throwable error) {
+        error.printStackTrace();
     }
 
     @OnMessage
-    public void message(String message) {
-        List<RemoteEndpoint.Basic> clients = new ArrayList<>(CONNECTIONS.size());
-        for (CommandConsoleEndpoint client : CONNECTIONS) {
-            clients.add(client.session.getBasicRemote());
+    public void message(Session session, String message) {
+        Result result = GOBLIN_COMMANDER.execute(processContext, message);
+        Process process = result.getProcess();
+        if (process != null) {
+            handleProcess(session.getBasicRemote(), process);
+        } else {
+            ResultModel resultModel = new ResultModel();
+            resultModel.setSpeech(result.getSpeech());
+            resultModel.setPrint(result.getPrint());
+            resultModel.setForward(result.getForward());
+            resultModel.setNext(result.getNext());
+            resultModel.setSearch(result.getSearch());
+            broadcast(session.getBasicRemote(), resultModel);
         }
+    }
+
+    private void handleProcess(RemoteEndpoint.Basic client, Process process) {
         BufferedReader reader = null;
         try {
-            processContext = GOBLIN_COMMANDER.execute(processContext, message);
-            Process process = processContext.getProcess();
             InputStream inputStream = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(inputStream);
             reader = new BufferedReader(isr);
             String line;
             while ((line = reader.readLine()) != null) {
-                broadcast(clients, "{\"print\": \"" + line + "\"}");
+                ResultModel resultModel = new ResultModel();
+                resultModel.setPrint(line);
+                broadcast(client, resultModel);
             }
             int exitValue = process.waitFor();
             if (0 == exitValue) {
-                broadcast(clients, "{\"print\": \"successful\"}");
+                ResultModel resultModel = new ResultModel();
+                resultModel.setPrint("successful");
+                broadcast(client, resultModel);
             } else {
-                broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
+                ResultModel resultModel = new ResultModel();
+                resultModel.setSpeech("Sorry, My hands are tied");
+                broadcast(client, resultModel);
             }
-        } catch (CommandNotFoundException e) {
-            broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
-        } catch (CommandExecuteException | IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
+            ResultModel resultModel = new ResultModel();
+            resultModel.setSpeech("Sorry, My hands are tied");
+            broadcast(client, resultModel);
         } finally {
             CloseableUtilities.closeQuietly(reader);
         }
     }
 
-    private void broadcast(List<RemoteEndpoint.Basic> clients, String message) {
+    private void broadcast(RemoteEndpoint.Basic client, ResultModel result) {
         try {
-            for (RemoteEndpoint.Basic client : clients) {
-                synchronized (client) {
-                    client.sendText(message);
-                }
-            }
+            String message = OBJECT_MAPPER.writeValueAsString(result);
+            client.sendText(message);
         } catch (IOException e) {
             //ignore
         }

@@ -67,10 +67,12 @@
     });
 
     function sendCommand() {
-        var command = document.querySelector("#command").value;
+        var node = document.querySelector("#command");
+        var command = node.value;
         console.log("send command: " + command);
         scrollConsole(command);
         ws.send(command);
+        node.value = "";
     }
 
     function scrollConsole(message) {
@@ -79,25 +81,32 @@
         if (message.indexOf("{") == 0) {
             result = JSON.parse(message);
         }
-        var consoleContainer = document.querySelector("#console");
-        var p = document.createElement("p");
-        var a = document.createElement("a");
-        a.href = "!#";
         var span = document.createElement("span");
         if (result) {
-            if (result["speech"]) {
-                span.innerHTML = result["speech"];
+            if (result["search"]) {
+                window.open("https://www.google.com/#q=" + result["search"].replace(" ", "+"));
+                return;
+            } else if (result["speech"]) {
+                span.innerHTML = convert2Html(result["speech"]);
                 speech(result["speech"]);
             } else {
-                span.innerHTML = result.print;
+                span.innerHTML = convert2Html(result.print);
             }
         } else {
             span.innerHTML = message;
         }
+        var consoleContainer = document.querySelector("#console");
+        var p = document.createElement("p");
+        var a = document.createElement("a");
+        a.href = "!#";
         p.appendChild(a);
         p.appendChild(span);
         consoleContainer.appendChild(p);
         consoleContainer.scrollTop = consoleContainer.scrollHeight;
+    }
+
+    function convert2Html(message) {
+        return message.replace(" ", "&nbsp;");
     }
 
     function speech(text) {
