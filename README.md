@@ -4,6 +4,13 @@ goblin-console
 
 Goblin console, see https://github.com/aiyanbo/goblin-core
 
+Requires
+--------
+
+- jdk1.7
+- tomcat8.0
+- systems: windows7, mac os x, linux
+
 Build
 ------
 - build jmotor-utility
