@@ -70,19 +70,19 @@ public class CommandConsoleEndpoint {
             reader = new BufferedReader(isr);
             String line;
             while ((line = reader.readLine()) != null) {
-                broadcast(clients, line);
+                broadcast(clients, "{\"print\": \"" + line + "\"}");
             }
             int exitValue = process.waitFor();
             if (0 == exitValue) {
-                broadcast(clients, "successful");
+                broadcast(clients, "{\"print\": \"successful\"}");
             } else {
-                broadcast(clients, "failure");
+                broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
             }
         } catch (CommandNotFoundException e) {
-            broadcast(clients, message + ": command not fund");
+            broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
         } catch (CommandExecuteException | IOException | InterruptedException e) {
             e.printStackTrace();
-            broadcast(clients, e.getLocalizedMessage());
+            broadcast(clients, "{\"speech\": \"Sorry, My hands are tied\"}");
         } finally {
             CloseableUtilities.closeQuietly(reader);
         }
