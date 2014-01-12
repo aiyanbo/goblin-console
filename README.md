@@ -10,6 +10,7 @@ Requires
 - jdk1.7
 - tomcat8.0
 - systems: windows7, mac os x, linux
+- chrome25+
 
 Build
 ------
