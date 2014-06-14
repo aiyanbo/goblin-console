@@ -61,17 +61,23 @@ public class CommandConsoleEndpoint {
 
     @OnMessage
     public void message(Session session, String message) {
-        Result result = GOBLIN_COMMANDER.execute(processContext, message);
-        Process process = result.getProcess();
-        if (process != null) {
-            handleProcess(session.getBasicRemote(), process);
-        } else {
+        try {
+            Result result = GOBLIN_COMMANDER.execute(processContext, message);
+            Process process = result.getProcess();
+            if (process != null) {
+                handleProcess(session.getBasicRemote(), process);
+            } else {
+                ResultModel resultModel = new ResultModel();
+                resultModel.setSpeech(result.getSpeech());
+                resultModel.setPrint(result.getPrint());
+                resultModel.setForward(result.getForward());
+                resultModel.setNext(result.getNext());
+                resultModel.setSearch(result.getSearch());
+                broadcast(session.getBasicRemote(), resultModel);
+            }
+        } catch (Exception e) {
             ResultModel resultModel = new ResultModel();
-            resultModel.setSpeech(result.getSpeech());
-            resultModel.setPrint(result.getPrint());
-            resultModel.setForward(result.getForward());
-            resultModel.setNext(result.getNext());
-            resultModel.setSearch(result.getSearch());
+            resultModel.setSpeech("I have a trouble, please try a later.");
             broadcast(session.getBasicRemote(), resultModel);
         }
     }
