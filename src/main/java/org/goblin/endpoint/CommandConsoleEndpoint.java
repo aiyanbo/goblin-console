@@ -101,13 +101,13 @@ public class CommandConsoleEndpoint {
                 broadcast(client, resultModel);
             } else {
                 ResultModel resultModel = new ResultModel();
-                resultModel.setSpeech("Sorry, My hands are tied");
+                resultModel.setSpeech("Ah oh, you have a trouble");
                 broadcast(client, resultModel);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             ResultModel resultModel = new ResultModel();
-            resultModel.setSpeech("Sorry, My hands are tied");
+            resultModel.setSpeech("Ah oh, you have a trouble");
             broadcast(client, resultModel);
         } finally {
             CloseableUtilities.closeQuietly(reader);
