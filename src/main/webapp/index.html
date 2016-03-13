@@ -195,7 +195,7 @@
     }
 
     function speech(text) {
-        var speech = "http://tts-api.com/tts.mp3?q=" + encodeURIComponent(text);
+        var speech = "http://www.voicerss.org/controls/speech.ashx?src=" + encodeURIComponent(text) + "&c=mp3&rnd=" + Math.random();
         new Audio(speech).play();
     }
 
